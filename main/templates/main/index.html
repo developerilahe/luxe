@@ -1,0 +1,918 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Premium E-Commerce Experience with Smooth Scroll">
+    <title>LUXE | Premium E-Commerce</title>
+    
+    <!-- Preconnect for faster external resources -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Swiper.js -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            height: 100vh;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body.modal-open {
+            overflow: hidden;
+        }
+        
+        .sections-container {
+            position: relative;
+            width: 100%;
+            height: 91vh;
+            overflow: hidden;
+        }
+        
+        .section {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 91vh;
+            visibility: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+        
+        .section.active {
+            visibility: visible;
+            z-index: 1;
+        }
+        
+        .section::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .section::-webkit-scrollbar-track {
+            background: #111;
+        }
+        
+        .section::-webkit-scrollbar-thumb {
+            background: #c8a86b;
+            border-radius: 3px;
+        }
+        
+        @media (max-width: 1023px) {
+            body {
+                overflow-y: auto;
+                position: relative;
+                height: auto;
+            }
+            .sections-container {
+                height: auto;
+            }
+            .section {
+                position: relative;
+                height: auto;
+                min-height: 100vh;
+                visibility: visible !important;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <a href="/"><span class="logo-text">LUXE</span><span class="logo-dot">.</span></a>
+            </div>
+            
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="#" data-section="0" class="nav-link active">Home</a></li>
+                    <li><a href="#" data-section="1" class="nav-link">Shop</a></li>
+                    <li><a href="#" data-section="2" class="nav-link">Collections</a></li>
+                    <li><a href="#" data-section="3" class="nav-link">About</a></li>
+                    <li><a href="#" data-section="4" class="nav-link">Contact</a></li>
+                </ul>
+            </nav>
+            
+            <div class="header-actions">
+                <button class="icon-btn search-toggle" aria-label="Search">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="icon-btn cart-btn" aria-label="Cart">
+                    <i class="fas fa-bag-shopping"></i>
+                    <span class="cart-count">0</span>
+                </button>
+                <button class="icon-btn menu-btn" aria-label="Menu">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Fixed Search Bar with Results -->
+    <div class="fixed-search-bar" id="fixedSearchBar">
+        <div class="fixed-search-container">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="global-search" placeholder="Search products...">
+                <button class="clear-search" id="clearSearch"><i class="fas fa-times"></i></button>
+            </div>
+            <button class="close-search-bar" id="closeSearchBar">
+                <i class="fas fa-chevron-up"></i>
+            </button>
+        </div>
+        
+        <div class="search-results-container" id="searchResultsContainer">
+            <div class="search-results-header">
+                <span class="results-count" id="resultsCount">0 products found</span>
+                <button class="clear-results" id="clearResults">Clear</button>
+            </div>
+            <div class="search-results-grid" id="searchResultsGrid"></div>
+        </div>
+    </div>
+
+    <!-- Navigation Arrows -->
+    <div class="nav-arrows">
+        <button class="arrow-btn up-arrow" aria-label="Previous section">
+            <i class="fas fa-chevron-up"></i>
+        </button>
+        <div class="section-indicator">
+            <span class="current-section">01</span>
+            <span class="separator">/</span>
+            <span class="total-sections">06</span>
+        </div>
+        <button class="arrow-btn down-arrow" aria-label="Next section">
+            <i class="fas fa-chevron-down"></i>
+        </button>
+    </div>
+
+    <!-- Sections Container -->
+    <div class="sections-container">
+        <!-- SECTION 1: HERO -->
+        <section id="home" class="section hero-section" data-section="0">
+            <div class="section-half left-half">
+                <div class="hero-content">
+                    <span class="hero-badge">Summer Collection 2024</span>
+                    <h1 class="hero-title">
+                        <span class="title-line">Elevate Your</span>
+                        <span class="title-line gradient-text">Everyday Style</span>
+                    </h1>
+                    <p class="hero-description">Discover the perfect blend of comfort, quality, and contemporary design. Shop the latest trends now.</p>
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary shop-now-btn" data-section="1">Shop Now <i class="fas fa-arrow-right"></i></button>
+                        <button class="btn btn-secondary">View Lookbook</button>
+                    </div>
+                </div>
+            </div>
+            <div class="section-half right-half">
+                <div class="hero-slider-container">
+                    <div class="swiper hero-slider">
+                        <div class="swiper-wrapper">
+                            <div class="swiper-slide">
+                                <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200&h=800&fit=crop');"></div>
+                                <div class="slide-overlay"></div>
+                                <div class="slide-caption">Premium Quality</div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200&h=800&fit=crop');"></div>
+                                <div class="slide-overlay"></div>
+                                <div class="slide-caption">Sustainable Fashion</div>
+                            </div>
+                            <div class="swiper-slide">
+                                <div class="slide-bg" style="background-image: url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&h=800&fit=crop');"></div>
+                                <div class="slide-overlay"></div>
+                                <div class="slide-caption">Limited Edition</div>
+                            </div>
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sponsor-marquee">
+                <div class="marquee-track">
+                    <div class="marquee-content">
+                        <span class="sponsor-item"><i class="fab fa-nike"></i> NIKE</span>
+                        <span class="sponsor-item"><i class="fab fa-adidas"></i> ADIDAS</span>
+                        <span class="sponsor-item"><i class="fab fa-gucci"></i> GUCCI</span>
+                        <span class="sponsor-item"><i class="fab fa-zara"></i> ZARA</span>
+                        <span class="sponsor-item"><i class="fab fa-h-and-m"></i> H&M</span>
+                        <span class="sponsor-item"><i class="fab fa-prada"></i> PRADA</span>
+                        <span class="sponsor-item"><i class="fab fa-nike"></i> NIKE</span>
+                        <span class="sponsor-item"><i class="fab fa-adidas"></i> ADIDAS</span>
+                        <span class="sponsor-item"><i class="fab fa-gucci"></i> GUCCI</span>
+                        <span class="sponsor-item"><i class="fab fa-zara"></i> ZARA</span>
+                        <span class="sponsor-item"><i class="fab fa-h-and-m"></i> H&M</span>
+                        <span class="sponsor-item"><i class="fab fa-prada"></i> PRADA</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: PRODUCTS -->
+        <section id="products" class="section products-section" data-section="1">
+            <div class="section-half left-half">
+                <div class="filter-panel">
+                    <div class="filter-header">
+                        <h2 class="filter-title">Collections</h2>
+                        <p class="filter-subtitle">Find your perfect piece</p>
+                    </div>
+                    
+                    <div class="shop-search-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="shop-search" placeholder="Search in collections...">
+                    </div>
+                    
+                    <div class="categories-filter">
+                        <button class="filter-btn active" data-category="all">
+                            <i class="fas fa-th-large"></i>
+                            <span>All Products</span>
+                            <span class="category-count" id="all-count">0</span>
+                        </button>
+                        <button class="filter-btn" data-category="shoes">
+                            <i class="fas fa-shoe-prints"></i>
+                            <span>Footwear</span>
+                            <span class="category-count" id="shoes-count">0</span>
+                        </button>
+                        <button class="filter-btn" data-category="clothing">
+                            <i class="fas fa-tshirt"></i>
+                            <span>Apparel</span>
+                            <span class="category-count" id="clothing-count">0</span>
+                        </button>
+                        <button class="filter-btn" data-category="accessories">
+                            <i class="fas fa-gem"></i>
+                            <span>Accessories</span>
+                            <span class="category-count" id="accessories-count">0</span>
+                        </button>
+                    </div>
+                    
+                    <div class="price-filter">
+                        <div class="price-header">
+                            <h3>Price Range</h3>
+                            <span class="price-range-value" id="priceRangeValue">$0 - $500+</span>
+                        </div>
+                        <div class="price-slider-container">
+                            <div class="price-slider">
+                                <div class="slider-track"></div>
+                                <input type="range" id="price-min" class="price-slider-min" value="0" step="1">
+                                <input type="range" id="price-max" class="price-slider-max" value="500" step="1">
+                            </div>
+                        </div>
+                        <div class="price-inputs">
+                            <div class="price-input-wrapper">
+                                <span>$</span>
+                                <input type="number" id="min-price-input" placeholder="Min" value="0" step="1">
+                            </div>
+                            <div class="price-input-wrapper">
+                                <span>$</span>
+                                <input type="number" id="max-price-input" placeholder="Max" value="500" step="1">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="rating-filter">
+                        <h3>Customer Rating</h3>
+                        <div class="rating-options">
+                            <button class="rating-btn" data-rating="5">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                <span>5.0</span>
+                            </button>
+                            <button class="rating-btn" data-rating="4">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i>
+                                <span>4.0+</span>
+                            </button>
+                            <button class="rating-btn" data-rating="3">
+                                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
+                                <span>3.0+</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="availability-filter">
+                        <h3>Availability</h3>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="in-stock-only">
+                            <span class="checkmark"></span>
+                            In Stock Only
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="on-sale-only">
+                            <span class="checkmark"></span>
+                            On Sale
+                        </label>
+                    </div>
+                    
+                    <div class="brand-filter">
+                        <h3>Brands</h3>
+                        <div class="brand-list">
+                            <label class="checkbox-label"><input type="checkbox" value="luxe"><span class="checkmark"></span>LUXE</label>
+                            <label class="checkbox-label"><input type="checkbox" value="premium"><span class="checkmark"></span>Premium</label>
+                            <label class="checkbox-label"><input type="checkbox" value="urban"><span class="checkmark"></span>Urban</label>
+                        </div>
+                    </div>
+                    
+                    <div class="sort-filter">
+                        <h3>Sort By</h3>
+                        <select id="sort-by">
+                            <option value="default">Default</option>
+                            <option value="price-asc">Price: Low to High</option>
+                            <option value="price-desc">Price: High to Low</option>
+                            <option value="name-asc">Name: A to Z</option>
+                            <option value="name-desc">Name: Z to A</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-actions">
+                        <button class="btn-filter-apply" id="applyFilters">Apply Filters</button>
+                        <button class="btn-filter-reset" id="resetFilters">Reset All</button>
+                    </div>
+                    
+                    <div class="filter-stats">
+                        <i class="fas fa-box"></i>
+                        <span id="product-count">0</span> products found
+                    </div>
+                </div>
+            </div>
+            <div class="section-half right-half">
+                <div class="products-container">
+                    <div class="promo-banner">
+                        <div class="banner-content">
+                            <span class="banner-tag">🔥 Limited Time</span>
+                            <h3 class="banner-title">50% OFF</h3>
+                            <p class="banner-text">On all summer collections</p>
+                            <div class="countdown" id="countdown">
+                                <div class="countdown-item"><span id="days">00</span><span>Days</span></div>
+                                <div class="countdown-item"><span id="hours">00</span><span>Hours</span></div>
+                                <div class="countdown-item"><span id="minutes">00</span><span>Mins</span></div>
+                                <div class="countdown-item"><span id="seconds">00</span><span>Secs</span></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="products-grid" id="products-grid"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: COLLECTIONS -->
+        <section id="collections" class="section collections-section" data-section="2">
+            <div class="section-half left-half">
+                <div class="collections-info">
+                    <div class="collections-header">
+                        <div class="collections-badge">Explore</div>
+                        <h2 class="collections-title">
+                            <span class="title-line">Curated</span>
+                            <span class="title-line gradient-text">Collections</span>
+                        </h2>
+                        <p class="collections-description">Discover carefully curated selections of our finest pieces, each telling a unique story of craftsmanship and style.</p>
+                    </div>
+                    
+                    <div class="collection-stats">
+                        <div class="stat-item">
+                            <span class="stat-number" id="collectionCount">0</span>
+                            <span class="stat-label">Collections</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number" id="totalPiecesCount">0</span>
+                            <span class="stat-label">Exclusive Pieces</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-half right-half">
+                <div class="collections-marquees-container">
+                    <!-- Marquee Row 1 - Right to Left -->
+                    <div class="marquee-wrapper" data-direction="right-to-left">
+                        <div class="marquee-row" id="marqueeRow1">
+                            <div class="marquee-track">
+                                <div class="marquee-items" id="marqueeItems1"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Marquee Row 2 - Left to Right -->
+                    <div class="marquee-wrapper" data-direction="left-to-right">
+                        <div class="marquee-row" id="marqueeRow2">
+                            <div class="marquee-track">
+                                <div class="marquee-items" id="marqueeItems2"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Marquee Row 3 - Right to Left (Faster) -->
+                    <div class="marquee-wrapper" data-direction="right-to-left-fast">
+                        <div class="marquee-row" id="marqueeRow3">
+                            <div class="marquee-track">
+                                <div class="marquee-items" id="marqueeItems3"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- SECTION 4: ABOUT - CRAZY VERSION -->
+        <section id="about" class="section about-section" data-section="3">
+            <div class="section-half left-half">
+                <div class="about-left-content">
+                    <div class="floating-shape shape-1"></div>
+                    <div class="floating-shape shape-2"></div>
+                    <div class="floating-shape shape-3"></div>
+                    
+                    <div class="about-badge-wrapper">
+                        <span class="about-badge">✦ WHO WE ARE ✦</span>
+                    </div>
+                    
+                    <h1 class="about-title">
+                        <span class="title-word" data-text="We">We</span>
+                        <span class="title-word" data-text="Don't">Don't</span>
+                        <span class="title-word" data-text="Just">Just</span>
+                        <span class="title-word" data-text="Create">Create</span>
+                        <span class="title-word highlight-word" data-text="Fashion">Fashion</span>
+                    </h1>
+                    <h2 class="about-subtitle">We Create <span class="gradient-text">Experiences</span></h2>
+                    
+                    <div class="about-description">
+                        <p>Born from a passion for exceptional design and uncompromising quality, LUXE represents the pinnacle of contemporary fashion. Every stitch, every fabric, every detail is meticulously crafted to tell a story.</p>
+                        <p class="second-p">We believe that true luxury lies in the details — the unexpected, the extraordinary, the unforgettable.</p>
+                    </div>
+                    
+                    <div class="about-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-globe"></i></div>
+                            <div class="stat-number" data-target="25">0</div>
+                            <div class="stat-label">Countries</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-users"></i></div>
+                            <div class="stat-number" data-target="50000">0</div>
+                            <div class="stat-label">Happy Customers</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+                            <div class="stat-number" data-target="15">0</div>
+                            <div class="stat-label">Awards Won</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon"><i class="fas fa-heart"></i></div>
+                            <div class="stat-number" data-target="100">0</div>
+                            <div class="stat-label">Designers</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-half right-half">
+                <div class="about-right-content">
+                    <div class="about-showcase">
+                        <div class="showcase-card-3d" id="showcaseCard">
+                            <div class="card-3d-inner">
+                                <div class="card-3d-front">
+                                    <div class="card-3d-image"></div>
+                                    <div class="card-3d-overlay"></div>
+                                    <div class="card-3d-content">
+                                        <h3>Innovation Meets</h3>
+                                        <h2>Elegance</h2>
+                                        <div class="card-3d-line"></div>
+                                        <p>Redefining modern luxury</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="journey-section">
+                            <div class="journey-header">
+                                <span class="journey-badge">OUR JOURNEY</span>
+                                <h3>From Dream to <span class="gradient-text">Reality</span></h3>
+                            </div>
+                            <div class="timeline">
+                                <div class="timeline-item" data-year="2015">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <h4>The Beginning</h4>
+                                        <p>Founded with a vision to revolutionize fashion</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item" data-year="2018">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <h4>Global Expansion</h4>
+                                        <p>Opened first international flagship store</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item" data-year="2021">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <h4>Sustainability Pledge</h4>
+                                        <p>Committed to eco-friendly practices</p>
+                                    </div>
+                                </div>
+                                <div class="timeline-item" data-year="2024">
+                                    <div class="timeline-dot"></div>
+                                    <div class="timeline-content">
+                                        <h4>The Future</h4>
+                                        <p>Pushing boundaries of innovation</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="team-section">
+                        <div class="team-header">
+                            <span class="team-badge">✦ CREATIVE MINDS ✦</span>
+                            <h3>Meet the <span class="gradient-text">Visionaries</span></h3>
+                        </div>
+                        <div class="team-grid">
+                            <div class="team-card">
+                                <div class="team-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop" alt="Team Member" class="team-image">
+                                    <div class="team-social">
+                                        <a href="#"><i class="fab fa-instagram"></i></a>
+                                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                        <a href="#"><i class="fab fa-behance"></i></a>
+                                    </div>
+                                </div>
+                                <div class="team-info">
+                                    <h4>Alexander Chen</h4>
+                                    <p>Creative Director</p>
+                                </div>
+                            </div>
+                            <div class="team-card">
+                                <div class="team-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop" alt="Team Member" class="team-image">
+                                    <div class="team-social">
+                                        <a href="#"><i class="fab fa-instagram"></i></a>
+                                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                        <a href="#"><i class="fab fa-behance"></i></a>
+                                    </div>
+                                </div>
+                                <div class="team-info">
+                                    <h4>Isabella Rossi</h4>
+                                    <p>Head of Design</p>
+                                </div>
+                            </div>
+                            <div class="team-card">
+                                <div class="team-image-wrapper">
+                                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop" alt="Team Member" class="team-image">
+                                    <div class="team-social">
+                                        <a href="#"><i class="fab fa-instagram"></i></a>
+                                        <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                                        <a href="#"><i class="fab fa-behance"></i></a>
+                                    </div>
+                                </div>
+                                <div class="team-info">
+                                    <h4>Marcus Thompson</h4>
+                                    <p>Innovation Lead</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="values-section">
+                        <div class="values-header">
+                            <span class="values-badge">OUR VALUES</span>
+                            <h3>What Drives <span class="gradient-text">Us</span></h3>
+                        </div>
+                        <div class="values-grid">
+                            <div class="value-card">
+                                <div class="value-icon"><i class="fas fa-diamond"></i></div>
+                                <h4>Excellence</h4>
+                                <p>Uncompromising quality in everything we do</p>
+                            </div>
+                            <div class="value-card">
+                                <div class="value-icon"><i class="fas fa-leaf"></i></div>
+                                <h4>Sustainability</h4>
+                                <p>Committed to protecting our planet</p>
+                            </div>
+                            <div class="value-card">
+                                <div class="value-icon"><i class="fas fa-hand-sparkles"></i></div>
+                                <h4>Innovation</h4>
+                                <p>Pushing boundaries of creativity</p>
+                            </div>
+                            <div class="value-card">
+                                <div class="value-icon"><i class="fas fa-heart"></i></div>
+                                <h4>Authenticity</h4>
+                                <p>True to our vision and values</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- SECTION 5: CONTACT - CRAZY VERSION -->
+        <section id="contact" class="section contact-section" data-section="4">
+            <div class="section-half left-half">
+                <div class="contact-left-content">
+                    <canvas id="particleCanvas" class="particle-canvas"></canvas>
+                    
+                    <div class="contact-header">
+                        <div class="contact-badge-wrapper">
+                            <span class="contact-badge">✦ LET'S CONNECT ✦</span>
+                        </div>
+                        <h1 class="contact-title">
+                            <span class="title-line">Start a</span>
+                            <span class="title-line gradient-text">Conversation</span>
+                        </h1>
+                        <p class="contact-description">We'd love to hear from you. Whether you have a question about our collections, need styling advice, or just want to say hello.</p>
+                    </div>
+                    
+                    <div class="contact-info-grid">
+                        <div class="contact-info-card">
+                            <div class="card-icon-wrapper">
+                                <div class="card-icon-glow"></div>
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <h3>Visit Us</h3>
+                            <p>123 Fashion Avenue<br>New York, NY 10001</p>
+                        </div>
+                        <div class="contact-info-card">
+                            <div class="card-icon-wrapper">
+                                <div class="card-icon-glow"></div>
+                                <i class="fas fa-phone-alt"></i>
+                            </div>
+                            <h3>Call Us</h3>
+                            <p>+1 (555) 123-4567<br>Mon-Fri 9am-6pm</p>
+                        </div>
+                        <div class="contact-info-card">
+                            <div class="card-icon-wrapper">
+                                <div class="card-icon-glow"></div>
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h3>Email Us</h3>
+                            <p>hello@luxe.com<br>support@luxe.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="social-section">
+                        <h3>Follow the Journey</h3>
+                        <div class="social-links">
+                            <a href="#" class="social-link">
+                                <div class="social-icon-bg"></div>
+                                <i class="fab fa-instagram"></i>
+                                <span>Instagram</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <div class="social-icon-bg"></div>
+                                <i class="fab fa-twitter"></i>
+                                <span>Twitter</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <div class="social-icon-bg"></div>
+                                <i class="fab fa-facebook-f"></i>
+                                <span>Facebook</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <div class="social-icon-bg"></div>
+                                <i class="fab fa-pinterest-p"></i>
+                                <span>Pinterest</span>
+                            </a>
+                            <a href="#" class="social-link">
+                                <div class="social-icon-bg"></div>
+                                <i class="fab fa-tiktok"></i>
+                                <span>TikTok</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section-half right-half">
+                <div class="contact-right-content">
+                    <div class="form-container-3d">
+                        <div class="form-card">
+                            <div class="form-header">
+                                <div class="form-header-shape"></div>
+                                <h2>Send us a <span class="gradient-text">Message</span></h2>
+                                <p>We'll get back to you within 24 hours</p>
+                            </div>
+                            
+                            <form id="contactForm" class="contact-form">
+                                <div class="input-group floating-input">
+                                    <input type="text" id="name" required>
+                                    <label for="name">Your Name</label>
+                                    <div class="input-border"></div>
+                                    <i class="fas fa-user input-icon"></i>
+                                </div>
+                                
+                                <div class="input-group floating-input">
+                                    <input type="email" id="email" required>
+                                    <label for="email">Email Address</label>
+                                    <div class="input-border"></div>
+                                    <i class="fas fa-envelope input-icon"></i>
+                                </div>
+                                
+                                <div class="input-group floating-input">
+                                    <input type="text" id="subject" required>
+                                    <label for="subject">Subject</label>
+                                    <div class="input-border"></div>
+                                    <i class="fas fa-tag input-icon"></i>
+                                </div>
+                                
+                                <div class="input-group floating-input textarea-group">
+                                    <textarea id="message" rows="4" required></textarea>
+                                    <label for="message">Your Message</label>
+                                    <div class="input-border"></div>
+                                    <i class="fas fa-comment input-icon"></i>
+                                </div>
+                                
+                                <div class="form-extra">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="newsletter">
+                                        <span class="checkmark-custom"></span>
+                                        Subscribe to newsletter
+                                    </label>
+                                </div>
+                                
+                                <button type="submit" class="submit-btn" id="submitBtn">
+                                    <span class="btn-text">Send Message</span>
+                                    <span class="btn-icon"><i class="fas fa-paper-plane"></i></span>
+                                    <div class="btn-shine"></div>
+                                </button>
+                            </form>
+                            
+                            <div class="success-message" id="successMessage">
+                                <div class="success-icon">
+                                    <i class="fas fa-check-circle"></i>
+                                </div>
+                                <h3>Message Sent!</h3>
+                                <p>Thank you for reaching out. We'll get back to you soon.</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="live-status">
+                        <div class="status-indicator">
+                            <div class="pulse-dot"></div>
+                            <span>Live support online</span>
+                        </div>
+                        <p>Response time: <strong>&lt; 2 hours</strong></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- SECTION 6: FOOTER - CRAZY VERSION -->
+        <footer id="footer" class="section footer-section" data-section="5">
+            <div class="footer-container">
+                <div class="footer-bg-animation">
+                    <div class="footer-particles" id="footerParticles"></div>
+                    <div class="footer-gradient"></div>
+                </div>
+                
+                <div class="footer-main">
+                    <div class="footer-column brand-column">
+                        <div class="footer-logo">
+                            <span class="footer-logo-text">LUXE</span>
+                            <span class="footer-logo-dot">.</span>
+                        </div>
+                        <p class="footer-tagline">Redefining luxury fashion for the modern world. Every piece tells a story of excellence.</p>
+                        <div class="footer-availability">
+                            <div class="availability-dot"></div>
+                            <span>24/7 Customer Support</span>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h3 class="footer-title">Explore</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">New Arrivals</a></li>
+                            <li><a href="#">Best Sellers</a></li>
+                            <li><a href="#">Collections</a></li>
+                            <li><a href="#">Lookbook</a></li>
+                            <li><a href="#">Sustainability</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column">
+                        <h3 class="footer-title">Support</h3>
+                        <ul class="footer-links">
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Shipping Info</a></li>
+                            <li><a href="#">Returns</a></li>
+                            <li><a href="#">Size Guide</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-column newsletter-column">
+                        <h3 class="footer-title">Stay Connected</h3>
+                        <p class="newsletter-text">Subscribe for exclusive offers and early access to new collections.</p>
+                        <div class="newsletter-form">
+                            <div class="newsletter-input-wrapper">
+                                <input type="email" id="newsletterEmail" placeholder="Your email address">
+                                <button id="subscribeBtn" class="newsletter-btn">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                            <div class="newsletter-success" id="newsletterSuccess">
+                                <i class="fas fa-check-circle"></i> Subscribed successfully!
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-social-section">
+                    <div class="footer-social-title">
+                        <span class="social-title-text">Connect With Us</span>
+                        <div class="social-title-line"></div>
+                    </div>
+                    <div class="footer-social-icons">
+                        <a href="#" class="social-icon-card" data-social="instagram">
+                            <div class="social-icon-bg"></div>
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-icon-card" data-social="twitter">
+                            <div class="social-icon-bg"></div>
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon-card" data-social="facebook">
+                            <div class="social-icon-bg"></div>
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon-card" data-social="pinterest">
+                            <div class="social-icon-bg"></div>
+                            <i class="fab fa-pinterest-p"></i>
+                        </a>
+                        <a href="#" class="social-icon-card" data-social="tiktok">
+                            <div class="social-icon-bg"></div>
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" class="social-icon-card" data-social="youtube">
+                            <div class="social-icon-bg"></div>
+                            <i class="fab fa-youtube"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-bottom">
+                    <div class="footer-copyright">
+                        <p>&copy; 2026 LUXE. All rights reserved. | <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+                    </div>
+                    <div class="footer-payment">
+                        <i class="fab fa-cc-visa"></i>
+                        <i class="fab fa-cc-mastercard"></i>
+                        <i class="fab fa-cc-amex"></i>
+                        <i class="fab fa-cc-paypal"></i>
+                        <i class="fab fa-apple-pay"></i>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modern Modal -->
+    <div id="product-modal" class="product-modal">
+        <div class="modal-backdrop"></div>
+        <div class="modal-container">
+            <div class="modal-content">
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+                <div class="modal-body" id="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="toast-notification"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/scroll-effect.js' %}"></script>
+    <script src="{% static 'js/slider.js' %}"></script>
+    <script src="{% static 'js/marquee.js' %}"></script>
+    <script src="{% static 'js/products.js' %}"></script>
+    <script src="{% static 'js/modal.js' %}"></script>
+    <script src="{% static 'js/collections.js' %}"></script>
+    <script src="{% static 'js/about.js' %}"></script>
+    <script src="{% static 'js/contact.js' %}"></script>
+    <script src="{% static 'js/footer.js' %}"></script>
+</body>
+</html>
